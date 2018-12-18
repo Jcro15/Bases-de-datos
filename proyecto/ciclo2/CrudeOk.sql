@@ -1,0 +1,13 @@
+execute PC_Departamentos.Ad_Departamentos('22', 'Boyaca');
+execute PC_Departamentos.Mo_Departamentos('22','boyaca');
+execute PC_Clientes.Ad_cliente('87654320', 'carlos','carlosA@mail.com','3001234522','CC','cll123-12','12345','22' );
+execute PC_Clientes.Mo_cliente('87654320','carlos','carlosB@mail.com', '3001234522','CC','cll123-12','12345','22' );
+execute PC_Empresas_mensajeria.Ad_Empresa('156243576-1','3012345566','aaqq@mail.com','111','111','22','60','2 dias');
+execute PC_Empresas_mensajeria.Mo_Empresa('156243576-1','3012345566','aaqq@mail.com','servientrega','kra123-234');
+execute PC_Empresas_mensajeria.Mo_Detalle_coberturas('22','156243576-1','65','2 dias');
+execute PC_ventas.Mo_ventas('87654320','T');
+execute PC_Entregas.Ad_Entregas('24','87654320','156243576-1');
+execute PC_Entregas.Mo_Entregas('24','A');
+execute PC_Entregas.El_Entregas('24');
+execute PC_Empresas_mensajeria.El_Detalle_coberturas('22','156243576-1');
+execute PC_Empresas_mensajeria.El_Empresa('156243576-1');

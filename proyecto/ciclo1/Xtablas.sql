@@ -1,0 +1,10 @@
+drop table Juegos;
+drop table Unidades;
+drop table Abastecimientos;
+drop table Surtimientos;
+drop table Bodegas;
+drop table Ofrecimientos;
+drop table Compras;
+drop table Proveedores;
+drop table Productos;
+drop table Categorias;
