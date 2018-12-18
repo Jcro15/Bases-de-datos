@@ -1,0 +1,856 @@
+PUNTO 1.A
+
+1.Explore el archivo usando un navegador y un editor.
+	¿Cuáles son las ventajas de uno u otro?
+	Es mejor visualizar la estructura del Xml en el navegador
+2. Describa la información que encuentra en el archivo.
+	Los departamentos con sus cursos y la información de cada uno de estos.
+
+
+Iniciales
+
+1
+A/Course_Catalog/Department/Title
+B/Course_Catalog/Department/Title/text()
+C/Course_Catalog/Department/@Code
+
+2 
+A /Course_Catalog/Department/Course [Title="Introduction to Databases"]
+B /Course_Catalog/Department/Course [Title="Introduction to Databases"]/@*
+C /Course_Catalog/Department/Course [Title="Introduction to Databases"]/*
+
+3 
+A /Course_Catalog/count(Department/Course [Description])
+B/Course_Catalog/Department/Course [Description]/Title/text()
+
+4/Course_Catalog/sum(Department/Course/@Enrollment)
+5/Course_Catalog/Department/Course[not (@Enrollment) ] /Title/text()
+6 /Course_Catalog/Department/Course[not (Prerequisites) ] /Title/text()
+7 /Course_Catalog/Department/Course[ not (@Number= (	/Course_Catalog/Department/Course/Prerequisites/Prereq/text()) ) ]/Title
+8/Course_Catalog/Department/Course/Instructors/Professor/Last_Name[text()=/Course_Catalog/Department/Chair/Professor/Last_Name/text()]/ancestor::Course/Title/text()
+9/Course_Catalog/Department/Course[@Number != parent::*/Course/@Number and Instructors/Professor/Last_Name/text() = parent::*/Course/Instructors/Professor/Last_Name/text()]/Title/text()
+10/Course_Catalog/Department/Chair[not(Professor/Last_Name/text() = parent::*/Course/Instructors/Professor/Last_Name/text())]/Professor/Last_Name/text()
+
+
+Stanford
+1 //Title
+2//Chair/*/Last_Name/text()
+3//Course[@Enrollment>500]/Title/text()
+4 /Course_Catalog/Department[Course/Prerequisites/Prereq='CS106B']/Title/text()
+5 //(Professor|Lecturer)[Middle_Initial]/Last_Name/text()
+6 /Course_Catalog/Department/Course[contains(Description,'Cross-listed')]/Title/text()
+7 //Department[@Code="CS"]/Course/@Enrollment
+8//Course[@Enrollment>100 and contains(Description,"system")]/Instructors/(Professor|Lecturer)/Last_Name/text()
+9 //Course[count(Instructors/(Professor|Lecturer))>2]/Title
+10 //Course[Title=following::Course/Title or Title=preceding::Course/Title]/@Number
+11//Course[ not (Instructors/Lecturer)]/@Number
+12 //Course[Instructors//Last_Name = parent::Department/Chair/Professor/Last_Name]/Title
+13 Course_Catalog/Department/Course/Instructors[Professor/Last_Name='Thrun' and Professor/Last_Name='Ng']/ancestor::Course/Title
+14 /Course_Catalog/Department/Course[Prerequisites/Prereq/text() =  /Course_Catalog/Department/Course[Instructors/Professor[Last_Name/text()="Roberts" and First_Name/text()="Eric"]]/@Number]/@Number
+15 /Course_Catalog/Department/Course[contains(Description,"system") and @Enrollment >100]/Instructors/*/Last_Name
+
+Propias
+--Cuantos departamentos hay?
+/Course_Catalog/count(Department/Title)
+--El promedio de inscripciones en todos los cursos
+Course_Catalog/count(Department/Title)
+--Los cursos que tienen 2 o mas prerequisitos
+/Course_Catalog/Department/Course[count(Prerequisites/Prereq)>=2]/Title/text()
+--Cuales son materias introductorias
+Course_Catalog/Department/Course[@Enrollment>20 and contains(Title/text(),"Intro")]/Title
+--Contar la cantidad de instructores en cursos con mas de 20 inscritos y temas de programacion
+Course_Catalog/Department/Course[@Enrollment>20 and contains(Title/text(),"Intro")]/Title
+
+DTD
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Course_Catalog  [
+    <!ELEMENT Course_Catalog  (Department+)>
+    <!ELEMENT Department (Title,Chair,Course+)>
+	<!ATTLIST Department Code CDATA #REQUIRED>
+    <!ELEMENT Title (#PCDATA)>
+    <!ELEMENT Chair (Professor+)>  
+    <!ELEMENT Professor (First_Name,Middle_Initial?,Last_Name)>
+	<!ELEMENT First_Name (#PCDATA)>
+	<!ELEMENT Middle_Initial (#PCDATA)>
+	<!ELEMENT Last_Name (#PCDATA)>
+    <!ELEMENT Course (Title,Description?,Instructors,Prerequisites?)>
+	<!ATTLIST Course 
+		Number CDATA #REQUIRED
+		Enrollment CDATA #IMPLIED>
+	<!ELEMENT Description (#PCDATA)>
+	<!ELEMENT Instructors (Professor|Lecturer)*>
+	<!ELEMENT Lecturer (First_Name,Middle_Initial?,Last_Name)>
+	<!ELEMENT Prerequisites (Prereq*)>
+	<!ELEMENT Prereq (#PCDATA)>
+]>
+
+Nuevos Datos
+<?xml version="1.0"?>
+<Course_Catalog>
+   <Department Code="CS">
+      <Title>Computer Science</Title>
+      <Chair>
+         <Professor>
+            <First_Name>Jennifer</First_Name>
+            <Last_Name>Widom</Last_Name>
+         </Professor>
+      </Chair>
+      <Course Number="CS106A" Enrollment="1070">
+         <Title>Programming Methodology</Title>
+         <Description>Introduction to the engineering of computer applications emphasizing modern software engineering principles.</Description>
+         <Instructors>
+            <Lecturer>
+               <First_Name>Jerry</First_Name>
+               <Middle_Initial>R.</Middle_Initial>
+               <Last_Name>Cain</Last_Name>
+            </Lecturer>
+            <Professor>
+               <First_Name>Eric</First_Name>
+               <Last_Name>Roberts</Last_Name>
+            </Professor>
+            <Professor>
+               <First_Name>Mehran</First_Name>
+               <Last_Name>Sahami</Last_Name>
+            </Professor>
+         </Instructors>
+      </Course>
+      <Course Number="CS106B" Enrollment="620">
+         <Title>Programming Abstractions</Title>
+         <Description>Abstraction and its relation to programming.</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Eric</First_Name>
+               <Last_Name>Roberts</Last_Name>
+            </Professor>
+            <Lecturer>
+               <First_Name>Jerry</First_Name>
+               <Middle_Initial>R.</Middle_Initial>
+               <Last_Name>Cain</Last_Name>
+            </Lecturer>
+         </Instructors>
+         <Prerequisites>
+            <Prereq>CS106A</Prereq>
+         </Prerequisites>
+      </Course>
+	  
+      <Course Number="CS107" Enrollment="500">
+         <Title>Computer Organization and Systems</Title>
+         <Description>Introduction to the fundamental concepts of computer systems.</Description>
+         <Instructors>
+            <Lecturer>
+               <First_Name>Julie</First_Name>
+               <Last_Name>Zelenski</Last_Name>
+            </Lecturer>
+         </Instructors>
+         <Prerequisites>
+            <Prereq>CS106B</Prereq>
+         </Prerequisites>
+      </Course>
+      <Course Number="CS109" Enrollment="280">
+         <Title>Introduction to Probability for Computer Scientists</Title>
+         <Instructors>
+            <Professor>
+               <First_Name>Mehran</First_Name>
+               <Last_Name>Sahami</Last_Name>
+            </Professor>
+         </Instructors>
+         <Prerequisites>
+            <Prereq>CS106B</Prereq>
+         </Prerequisites>
+      </Course>
+      <Course Number="CS124" Enrollment="60">
+         <Title>From Languages to Information</Title>
+         <Description>Natural language processing. Cross-listed as LING180.</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Dan</First_Name>
+               <Last_Name>Jurafsky</Last_Name>
+            </Professor>
+         </Instructors>
+         <Prerequisites>
+            <Prereq>CS107</Prereq>
+            <Prereq>CS109</Prereq>
+         </Prerequisites>
+      </Course>
+      <Course Number="CS143" Enrollment="90">
+         <Title>Compilers</Title>
+         <Description>Principles and practices for design and implementation of compilers and interpreters.</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Alex</First_Name>
+               <Middle_Initial>S.</Middle_Initial>
+               <Last_Name>Aiken</Last_Name>
+            </Professor>
+         </Instructors>
+         <Prerequisites>
+            <Prereq>CS107</Prereq>
+         </Prerequisites>
+      </Course>
+      <Course Number="CS145" Enrollment="130">
+         <Title>Introduction to Databases</Title>
+         <Description>Database design and use of database management systems for applications.</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Jennifer</First_Name>
+               <Last_Name>Widom</Last_Name>
+            </Professor>
+         </Instructors>
+         <Prerequisites>
+            <Prereq>CS107</Prereq>
+         </Prerequisites>
+      </Course>
+      <Course Number="CS221" Enrollment="180">
+         <Title>Artificial Intelligence: Principles and Techniques</Title>
+         <Instructors>
+            <Professor>
+               <First_Name>Andrew</First_Name>
+               <Last_Name>Ng</Last_Name>
+            </Professor>
+            <Professor>
+               <First_Name>Sebastian</First_Name>
+               <Last_Name>Thrun</Last_Name>
+            </Professor>
+         </Instructors>
+      </Course>
+      <Course Number="CS228" Enrollment="110">
+         <Title>Structured Probabilistic Models: Principles and Techniques</Title>
+         <Description>Using probabilistic modeling languages to represent complex domains.</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Daphne</First_Name>
+               <Last_Name>Koller</Last_Name>
+            </Professor>
+         </Instructors>
+      </Course>
+      <Course Number="CS229" Enrollment="320">
+         <Title>Machine Learning</Title>
+         <Description>A broad introduction to machine learning and statistical pattern recognition.</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Andrew</First_Name>
+               <Last_Name>Ng</Last_Name>
+            </Professor>
+         </Instructors>
+      </Course>
+	  
+	  
+	  <Course Number="PIMB" Enrollment="100">
+         <Title>Programacion imperativa modular basica</Title>
+         <Description>Primer curso de programacion</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Wilmer</First_Name>
+               <Last_Name>Garzon</Last_Name>
+            </Professor>
+			<Professor>
+               <First_Name>Patricia</First_Name>
+               <Last_Name>Castañeda</Last_Name>
+            </Professor>
+            <Lecturer>
+               <First_Name>Julian</First_Name>
+               <Last_Name>Benitez</Last_Name>
+            </Lecturer>
+         </Instructors>
+         <Prerequisites>
+            <Prereq>MMIN</Prereq>
+         </Prerequisites>
+      </Course>
+	  
+	  <Course Number="MMIN" Enrollment="120">
+         <Title>Modelos matematicos para la informatica</Title>
+         <Description>introduccion a modelamiento informal</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Raul</First_Name>
+               <Last_Name>Chaparro</Last_Name>
+            </Professor>
+         </Instructors>
+         
+            
+         
+      </Course>
+	  
+	  
+   </Department>
+   <Department Code="EE">
+      <Title>Electrical Engineering</Title>
+      <Chair>
+         <Professor>
+            <First_Name>Mark</First_Name>
+            <Middle_Initial>A.</Middle_Initial>
+            <Last_Name>Horowitz</Last_Name>
+         </Professor>
+      </Chair>
+      <Course Number="EE108A">
+         <Title>Digital Systems I</Title>
+         <Description>Digital circuit, logic, and system design.</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Subhasish</First_Name>
+               <Last_Name>Mitra</Last_Name>
+            </Professor>
+         </Instructors>
+      </Course>
+      <Course Number="EE108B">
+         <Title>Digital Systems II</Title>
+         <Description>The design of processor-based digital systems.</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>William</First_Name>
+               <Middle_Initial>J.</Middle_Initial>
+               <Last_Name>Dally</Last_Name>
+            </Professor>
+            <Professor>
+               <First_Name>Oyekunle</First_Name>
+               <Last_Name>Olukotun</Last_Name>
+            </Professor>
+         </Instructors>
+         <Prerequisites>
+            <Prereq>EE108A</Prereq>
+            <Prereq>CS106B</Prereq>
+         </Prerequisites>
+      </Course>
+   </Department>
+   <Department Code="LING">
+      <Title>Linguistics</Title>
+      <Chair>
+         <Professor>
+            <First_Name>Beth</First_Name>
+            <Last_Name>Levin</Last_Name>
+         </Professor>
+      </Chair>
+      <Course Number="LING180" Enrollment="60">
+         <Title>From Languages to Information</Title>
+         <Description>Natural language processing. Cross-listed as CS124.</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Dan</First_Name>
+               <Last_Name>Jurafsky</Last_Name>
+            </Professor>
+         </Instructors>
+         <Prerequisites>
+            <Prereq>CS107</Prereq>
+            <Prereq>CS109</Prereq>
+         </Prerequisites>
+      </Course>
+	  <Course Number="TALE" Enrollment="150">
+         <Title>Taller de lectura y escritura</Title>
+         <Description>Curso enfocado a desarrollar las habilidades blandas</Description>
+         <Instructors>
+            <Professor>
+               <First_Name>Pilar</First_Name>
+               <Last_Name>Trujillo</Last_Name>
+            </Professor>
+			<Professor>
+               <First_Name>Angela</First_Name>
+               <Last_Name>Cuartas</Last_Name>
+            </Professor>
+            
+         </Instructors>
+      </Course>
+   </Department>
+</Course_Catalog>
+
+
+DTD
+<!DOCTYPE Justificacion[
+	<!ELEMENT Justificacion (Proyecto+)>
+	
+	<!ELEMENT Proyecto (Nombre,Descripcion,Año,Rol,Evaluacion)>	
+	<!ATTLIST Proyecto
+            numero CDATA #REQUIRED>
+		
+	<!ELEMENT Nombre (#PCDATA)>
+    <!ELEMENT Descripcion (#PCDATA)>
+	<!ELEMENT Año (#PCDATA)>
+	<!ELEMENT Rol (#PCDATA)>
+	<!ELEMENT Evaluacion (#PCDATA)>
+]>
+
+Xml NoOk 
+
+<Justificacion>
+<Proyecto numero="168798">
+        
+		<Nombre>
+		epsilon
+		</Nombre>
+        <Nombre>
+		tetha
+		</Nombre>
+		<Descripcion>
+        Implementacion de bloqueos por rango en una base de datos relacional 
+        </Descripcion>
+		<Año>
+		2013
+		</Año>
+		
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		pendiente
+		</Evaluacion>
+	</Proyecto>
+</Justificacion>');
+
+<Justificacion>	
+<Proyecto numero="163326">
+        
+		<Nombre>
+		epsilon
+		</Nombre>
+        
+		<Año>
+		2013
+		</Año>
+		
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		pendiente
+		</Evaluacion>
+	</Proyecto>
+</justificacion>');
+
+<Justificacion>
+    <Proyecto>
+        
+		<Nombre>
+		epsilon
+		</Nombre>
+        
+		<Año>
+		2013
+		</Año>
+    
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		pendiente
+		</Evaluacion>
+	</Proyecto>  
+</Justificacion>');  
+
+Poblando
+
+Create table Perfiles(
+correo varchar2(30)NOT NULL,
+nombre varchar2(50) NOT NULL);
+
+
+Create table Competencias(
+codigo number(2) not null,
+nombre varchar2(10) not null);
+
+Create table Validaciones(
+numero number(5)NOT null,
+fecha date not null,
+estado varchar(1) Not null,
+perfil varchar2(30) Not null,
+profesional varchar2(30) not null,
+competencia number(2) not null,
+justificacion xmltype Not null);
+
+
+Create table Seguimientos(
+seguidor varchar2(30) not null,
+perfil varchar2(30) not null);
+
+
+Create or replace trigger TG_AD_validaciones
+before insert on Validaciones 
+for each row
+declare 
+x number;
+found number;
+fe2 varchar2(20);
+begin
+    select count(Seguidor) into found from Seguimientos where Seguimientos.seguidor=:new.perfil and Seguimientos.perfil=:new.profesional ; 
+    select count(numero)+1 into x from Validaciones ; 
+    IF found=0 THEN
+        RAISE_APPLICATION_ERROR(-20001,'Los validadores deben seguir al validado');
+    END IF;
+    select to_date(to_char(sysdate,'dd/mm/yyyy'),'dd/mm/yyyy') into fe2 from dual;
+    :new.fecha:= fe2;
+    :new.numero:=x;
+    :new.estado:='E';
+end;
+/
+
+
+
+insert into Competencias values(1,'SQL');
+insert into Competencias values(2,'suelos');
+insert into Competencias values(3,'Circuitos');
+
+
+insert into Perfiles values('comunicaciones@saldarriaga.org','sarriaga concha');
+insert into Perfiles values('webmaster@fpd.ong','pies descalzos');
+insert into Perfiles values('aliriopulidoedilcb@gamail.com','huella roja');
+insert into Perfiles values('Carlos@mail.com','Carlos M');
+insert into Perfiles values('Jorge@mail.com','Jorge R');
+insert into Perfiles values('Jimena@mail.com','Jimena Z');
+
+
+insert into Seguimientos values('Jimena@mail.com','Carlos@mail.com');
+insert into Seguimientos values('Jorge@mail.com','Jimena@mail.com');
+insert into Seguimientos values('Jorge@mail.com','Carlos@mail.com');
+
+
+
+
+insert into Validaciones values(1,'10/Jul/2015','T','Jorge@mail.com','Jimena@mail.com',1,
+'<?xml version="1.0"?>
+<!DOCTYPE Justificacion[
+	<!ELEMENT Justificacion (Proyecto+)>
+	
+	<!ELEMENT Proyecto (Nombre,Descripcion,Año,Rol,Evaluacion)>	
+	<!ATTLIST Proyecto
+            numero CDATA #REQUIRED>
+		
+	<!ELEMENT Nombre (#PCDATA)>
+    <!ELEMENT Descripcion (#PCDATA)>
+	<!ELEMENT Año (#PCDATA)>
+	<!ELEMENT Rol (#PCDATA)>
+	<!ELEMENT Evaluacion (#PCDATA)>
+	
+	
+]>
+
+<Justificacion>
+	<Proyecto numero="12694">
+        
+		<Nombre>
+		alfa
+		</Nombre>
+		<Descripcion>
+        Desarollo de una base de datos usando lenguajes sql
+        </Descripcion>
+		<Año>
+		2001
+		</Año>
+		
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		68
+		</Evaluacion>
+	</Proyecto>
+</Justificacion>');
+
+insert into Validaciones values(2,'15/JUL/2017','A','Jimena@mail.com','Carlos@mail.com',3,
+'<?xml version="1.0"?>
+<!DOCTYPE Justificacion[
+	<!ELEMENT Justificacion (Proyecto+)>
+	
+	<!ELEMENT Proyecto (Nombre,Descripcion,Año,Rol,Evaluacion)>	
+	<!ATTLIST Proyecto
+            numero CDATA #REQUIRED>
+		
+	<!ELEMENT Nombre (#PCDATA)>
+    <!ELEMENT Descripcion (#PCDATA)>
+	<!ELEMENT Año (#PCDATA)>
+	<!ELEMENT Rol (#PCDATA)>
+	<!ELEMENT Evaluacion (#PCDATA)>
+	
+	
+]>
+
+<Justificacion>
+	<Proyecto numero="12234">
+        
+		<Nombre>
+		beta
+		</Nombre>
+		<Descripcion>
+        Implementacion de un alumbrado publico
+        </Descripcion>
+		<Año>
+		2018
+		</Año>
+		
+		<Rol>
+		Ingeniero
+		</Rol>
+		
+		<Evaluacion>
+		81
+		</Evaluacion>
+	</Proyecto>
+    
+   <Proyecto numero="358975">
+        
+		<Nombre>
+		Zeta
+		</Nombre>
+		<Descripcion>
+        Implementacion del alumbrado de un centro comercial
+        </Descripcion>
+		<Año>
+		2014
+		</Año>
+		
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		67
+		</Evaluacion>
+	</Proyecto>
+</Justificacion>');
+
+insert into Validaciones values(3,'10/Jul/2015','T','Jorge@mail.com','Carlos@mail.com',2,
+'<?xml version="1.0"?>
+<!DOCTYPE Justificacion[
+	<!ELEMENT Justificacion (Proyecto+)>
+	
+	<!ELEMENT Proyecto (Nombre,Descripcion,Año,Rol,Evaluacion)>	
+	<!ATTLIST Proyecto
+            numero CDATA #REQUIRED>
+	<!ELEMENT Nombre (#PCDATA)>
+    <!ELEMENT Descripcion (#PCDATA)>
+	<!ELEMENT Año (#PCDATA)>
+	<!ELEMENT Rol (#PCDATA)>
+	<!ELEMENT Evaluacion (#PCDATA)>
+	
+	
+]>
+
+<Justificacion>
+	<Proyecto numero="673478">
+        
+		<Nombre>
+		ro
+		</Nombre>
+		<Descripcion>
+        estudio geologico en el amazonas
+        </Descripcion>
+		<Año>
+		2005
+		</Año>
+		
+		<Rol>
+		Asistente
+		</Rol>
+		
+		<Evaluacion>
+		90
+		</Evaluacion>
+	</Proyecto>
+    
+   <Proyecto numero="09876">
+        
+		<Nombre>
+		piton
+		</Nombre>
+		<Descripcion>
+        estudio de vias 
+        </Descripcion>
+		<Año>
+		2013
+		</Año>
+		
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		80
+		</Evaluacion>
+	</Proyecto>
+    
+    <Proyecto numero="122365">
+        
+		<Nombre>
+		gamma
+		</Nombre>
+		<Descripcion>
+        viabilidad sobre la construccion de un puente
+        </Descripcion>
+		<Año>
+		2016
+		</Año>
+		
+		<Rol>
+		Ingeniero
+		</Rol>
+		
+		<Evaluacion>
+		50
+		</Evaluacion>
+	</Proyecto>
+</Justificacion>');
+
+insert into Validaciones values(4,'10/Jul/2015','T','Jorge@mail.com','Carlos@mail.com',3,
+'<?xml version="1.0"?>
+<!DOCTYPE Justificacion[
+	<!ELEMENT Justificacion (Proyecto+)>
+    
+	
+	<!ELEMENT Proyecto (Nombre,Descripcion,Año,Rol,Evaluacion)>	
+	<!ATTLIST Proyecto
+            numero CDATA #REQUIRED>
+		
+	<!ELEMENT Nombre (#PCDATA)>
+    <!ELEMENT Descripcion (#PCDATA)>
+	<!ELEMENT Año (#PCDATA)>
+	<!ELEMENT Rol (#PCDATA)>
+	<!ELEMENT Evaluacion (#PCDATA)>
+	
+	
+]>
+
+<Justificacion>
+	<Proyecto numero="1346">
+        
+		<Nombre>
+		piton
+		</Nombre>
+		<Descripcion>
+        Implementacion de transacciones para bancos
+        </Descripcion>
+		<Año>
+		2015
+		</Año>
+		
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		33
+		</Evaluacion>
+	</Proyecto>
+    
+   <Proyecto numero="1994">
+        
+		<Nombre>
+		epsilon
+		</Nombre>
+		<Descripcion>
+        Implementacion de bloqueos por rango en una base de datos relacional 
+        </Descripcion>
+		<Año>
+		2013
+		</Año>
+		
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		65
+		</Evaluacion>
+	</Proyecto>
+    
+   
+		
+</Justificacion>');
+
+
+PoblandoNoOK
+
+insert into Validaciones values(5,'10/Jul/2015','T','Jimena@mail.com','Jorge@mail.com',1,
+'<!DOCTYPE Justificacion[
+	<!ELEMENT Justificacion (Proyecto+)>
+	
+	<!ELEMENT Proyecto (Nombre,Descripcion,Año,Rol,Evaluacion)>	
+	<!ATTLIST Proyecto
+            numero CDATA #REQUIRED>
+		
+	<!ELEMENT Nombre (#PCDATA)>
+    <!ELEMENT Descripcion (#PCDATA)>
+	<!ELEMENT Año (#PCDATA)>
+	<!ELEMENT Rol (#PCDATA)>
+	<!ELEMENT Evaluacion (#PCDATA)>
+	
+	
+]>
+
+<Justificacion>
+	<Proyecto numero="1224">
+        
+		<Nombre>
+		piton
+		</Nombre>
+		<Descripcion>
+        Implementacion de transacciones para bancos
+        </Descripcion>
+		<Año>
+		2015
+		</Año>
+		
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		30
+		</Evaluacion>
+	</Proyecto>
+</Justificacion>'); 
+
+
+insert into Validaciones values(7,'10/Ju/2016','T','Jimena@mail.com','Carlos@mail.com',1,
+'<?xml version="1.0"?>
+<!DOCTYPE Justificacion[
+	<!ELEMENT Justificacion (Proyecto+)>
+	
+	<!ELEMENT Proyecto (Nombre,Descripcion,Año,Rol,Evaluacion)>	
+	<!ATTLIST Proyecto
+            numero CDATA #REQUIRED>
+		
+	<!ELEMENT Nombre (#PCDATA)>
+    <!ELEMENT Descripcion (#PCDATA)>
+	<!ELEMENT Año (#PCDATA)>
+	<!ELEMENT Rol (#PCDATA)>
+	<!ELEMENT Evaluacion (#PCDATA)>
+	
+	
+]>
+
+<Justificacion>
+	<Proyecto numero="7654">
+        
+		<Nombre>
+		piton
+		</Nombre>
+		<Descripcion>
+        Implementacion de transacciones para bancos
+        </Descripcion>
+		<Año>
+		2015
+		</Año>
+		
+		<Rol>
+		Director
+		</Rol>
+		
+		<Evaluacion>
+		70
+		</Evaluacion>
+	</Proyecto>
+</Justificacion>');
+
+
+select * from validaciones;
+SELECT perfil,competencia,nombre,evaluacion
+	FROM  Validaciones V, XMLTABLE('/Justificacion/Proyecto'
+						passing V.justificacion
+						columns nombre  PATH  'Nombre/text()', evaluacion  path  'Evaluacion/text()'
+                            ) ;
+
+SELECT numero,perfil,nombre,año
+	FROM  Validaciones V, XMLTABLE('/Justificacion/Proyecto'
+						passing V.justificacion
+						columns nombre  PATH  'Nombre/text()', año path  'Año/text()'
+                            ) ;
