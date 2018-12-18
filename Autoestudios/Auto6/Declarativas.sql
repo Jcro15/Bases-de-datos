@@ -1,0 +1,1 @@
+Alter table staff add constraint ck_staff_name check(REGEXP_LIKE(name,'[a-zA-Z]+, [a-zA-Z_]'));

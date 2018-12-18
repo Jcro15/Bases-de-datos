@@ -1,0 +1,9 @@
+delete from occurs;
+delete from week;
+delete from attends;
+delete from teaches;
+delete from event;
+delete from room;
+delete from staff;
+delete from student;
+delete from modle;

@@ -1,0 +1,9 @@
+drop table occurs;
+drop table week;
+drop table attends;
+drop table teaches;
+drop table event;
+drop table room;
+drop table staff;
+drop table student;
+drop table modle;

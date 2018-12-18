@@ -1,0 +1,4 @@
+DROP PACKAGE PC_Taller;
+DROP PACKAGE PC_Profesor;
+DROP PACKAGE PA_Decano;
+DROP PACKAGE PA_Profesor;
